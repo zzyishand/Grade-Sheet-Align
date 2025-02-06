@@ -1,0 +1,109 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>Score Alignment Tool</title>  
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  
+</head>  
+<body>  
+    <div class="container">  
+        <h1>Score Alignment Tool</h1>  
+        
+        <div class="row">  
+            <div class="column">  
+                <h3>Standard List</h3>  
+                <textarea id="standard_col" placeholder="Paste standard list data..."></textarea>  
+                <div id="total_rows" class="info"></div>  
+                <button onclick="clearStandard()" class="clear-btn">Clear</button>  
+            </div>  
+            
+            <div class="column">  
+                <h3>Aligned Result</h3>  
+                <textarea id="result" readonly placeholder="Aligned scores will appear here..."></textarea>  
+            </div>  
+        </div>  
+
+        <div class="row">  
+            <div class="column">  
+                <h3>Reference List</h3>  
+                <textarea id="align_col" placeholder="Paste reference list data..."></textarea>  
+            </div>  
+            
+            <div class="column">  
+                <h3>Score List</h3>  
+                <textarea id="score_col" placeholder="Paste score list data..."></textarea>  
+            </div>  
+        </div>  
+
+        <button onclick="processData()" class="process-btn">Process Data</button>  
+
+        <div id="not_found" class="warning"></div>  
+    </div>  
+
+    <script>  
+        let isStandardLocked = false;  
+
+        document.getElementById('standard_col').addEventListener('input', function() {  
+            if (!isStandardLocked) {  
+                const lines = this.value.trim().split('\n').filter(line => line.trim());  
+                document.getElementById('total_rows').textContent = `Total: ${lines.length} rows`;  
+            }  
+        });  
+
+        function clearStandard() {  
+            document.getElementById('standard_col').value = '';  
+            document.getElementById('standard_col').readOnly = false;  
+            document.getElementById('total_rows').textContent = '';  
+            isStandardLocked = false;  
+        }  
+
+        async function processData() {  
+            const standard_col = document.getElementById('standard_col').value;  
+            const align_col = document.getElementById('align_col').value;  
+            const score_col = document.getElementById('score_col').value;  
+
+            if (!standard_col.trim()) {  
+                alert('Please input standard list data');  
+                return;  
+            }  
+
+            try {  
+                const response = await fetch('/align', {  
+                    method: 'POST',  
+                    headers: {  
+                        'Content-Type': 'application/json',  
+                    },  
+                    body: JSON.stringify({  
+                        standard_col: standard_col,  
+                        align_col: align_col,  
+                        score_col: score_col  
+                    })  
+                });  
+
+                const data = await response.json();  
+                
+                if (data.success) {  
+                    // Update and lock standard column  
+                    const standardTextarea = document.getElementById('standard_col');  
+                    standardTextarea.value = data.numbered_standard.join('\n');  
+                    standardTextarea.readOnly = true;  
+                    isStandardLocked = true;  
+
+                    document.getElementById('result').value = data.result.join('\n');  
+                    document.getElementById('total_rows').textContent = `Total: ${data.total_rows} rows`;  
+                    
+                    if (data.not_found.length > 0) {  
+                        document.getElementById('not_found').innerHTML =   
+                            'Warning: Items not found:<br>' + data.not_found.join('<br>');  
+                    } else {  
+                        document.getElementById('not_found').innerHTML = '';  
+                    }  
+                } else {  
+                    alert('Processing failed: ' + data.error);  
+                }  
+            } catch (error) {  
+                alert('Error occurred: ' + error);  
+            }  
+        }  
+    </script>  
+</body>  
+</html>
