@@ -19,6 +19,8 @@
             <div class="column">  
                 <h3>Aligned Result</h3>  
                 <textarea id="result" readonly placeholder="Aligned scores will appear here..."></textarea>  
+                <button onclick="copyResult()" class="copy-btn" id="copyButton">Copy Result</button>  
+                <div id="copyMessage" class="copy-message"></div>  
             </div>  
         </div>  
 
@@ -26,11 +28,13 @@
             <div class="column">  
                 <h3>Reference List</h3>  
                 <textarea id="align_col" placeholder="Paste reference list data..."></textarea>  
+                <button onclick="clearReference()" class="clear-btn">Clear</button>  
             </div>  
             
             <div class="column">  
                 <h3>Score List</h3>  
                 <textarea id="score_col" placeholder="Paste score list data..."></textarea>  
+                <button onclick="clearScore()" class="clear-btn">Clear</button>  
             </div>  
         </div>  
 
@@ -55,7 +59,40 @@
             document.getElementById('total_rows').textContent = '';  
             isStandardLocked = false;  
         }  
+        async function copyResult() {  
+            const resultText = document.getElementById('result').value;  
+            if (!resultText) {  
+                showCopyMessage('No result to copy!', false);  
+                return;  
+            }  
 
+            try {  
+                await navigator.clipboard.writeText(resultText);  
+                showCopyMessage('Result copied! You can paste to grade sheet.', true);  
+            } catch (err) {  
+                showCopyMessage('Failed to copy result!', false);  
+            }  
+        }  
+
+        function showCopyMessage(message, success) {  
+            const messageDiv = document.getElementById('copyMessage');  
+            messageDiv.textContent = message;  
+            messageDiv.className = 'copy-message ' + (success ? 'success' : 'error');  
+            
+            // 自动消失  
+            setTimeout(() => {  
+                messageDiv.textContent = '';  
+                messageDiv.className = 'copy-message';  
+            }, 3000);  
+        }  
+
+        function clearReference() {  
+            document.getElementById('align_col').value = '';  
+        }  
+
+        function clearScore() {  
+            document.getElementById('score_col').value = '';  
+        } 
         async function processData() {  
             const standard_col = document.getElementById('standard_col').value;  
             const align_col = document.getElementById('align_col').value;  

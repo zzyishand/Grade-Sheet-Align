@@ -98,3 +98,98 @@ textarea[readonly] {
     margin-top: 5px;  
     font-size: 14px;  
 }
+
+.copy-btn {  
+    position: absolute;  
+    bottom: -30px;  
+    right: 0;  
+    padding: 6px 12px;  
+    background-color: #2196F3;  
+    color: white;  
+    border: none;  
+    border-radius: 4px;  
+    cursor: pointer;  
+    font-size: 14px;  
+    transition: background-color 0.3s;  
+}  
+
+.copy-btn:hover {  
+    background-color: #1976D2;  
+}  
+
+.copy-message {  
+    position: absolute;  
+    bottom: -55px;  
+    right: 0;  
+    font-size: 14px;  
+    padding: 5px 10px;  
+    border-radius: 4px;  
+    animation: fadeIn 0.3s;  
+}  
+
+.copy-message.success {  
+    color: #4CAF50;  
+    background-color: #E8F5E9;  
+}  
+
+.copy-message.error {  
+    color: #f44336;  
+    background-color: #FFEBEE;  
+}  
+
+@keyframes fadeIn {  
+    from {  
+        opacity: 0;  
+        transform: translateY(-10px);  
+    }  
+    to {  
+        opacity: 1;  
+        transform: translateY(0);  
+    }  
+}  
+.clear-btn {  
+    position: absolute;  
+    bottom: -30px;  
+    left: 0;  
+    padding: 6px 12px;  
+    background-color: #ff4444;  
+    color: white;  
+    border: none;  
+    border-radius: 4px;  
+    cursor: pointer;  
+    font-size: 14px;  
+    transition: background-color 0.3s;  
+}  
+
+.clear-btn:hover {  
+    background-color: #ff3333;  
+}  
+
+/* 为每个列调整按钮位置 */  
+.column {  
+    flex: 1;  
+    position: relative;  
+    margin-bottom: 40px; /* 增加底部空间以容纳按钮 */  
+}  
+
+/* 确保所有按钮不会重叠 */  
+.column .clear-btn,  
+.column .copy-btn {  
+    position: absolute;  
+    bottom: -30px;  
+}  
+
+.column .clear-btn {  
+    left: 0;  
+}  
+
+.column .copy-btn {  
+    right: 0;  
+}  
+
+/* 确保消息显示在正确位置 */  
+.copy-message {  
+    position: absolute;  
+    bottom: -55px;  
+    right: 0;  
+}  
