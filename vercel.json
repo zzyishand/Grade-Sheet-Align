@@ -2,14 +2,14 @@
   "version": 2,  
   "builds": [  
     {  
-      "src": "app.py",  // 或者你的主 Python 文件名  
+      "src": "app.py",   
       "use": "@vercel/python"  
     }  
   ],  
   "routes": [  
     {  
       "src": "/(.*)",  
-      "dest": "app.py"  // 或者你的主 Python 文件名  
+      "dest": "app.py"  
     }  
   ]  
 }  
