@@ -59,6 +59,7 @@
             document.getElementById('total_rows').textContent = '';  
             isStandardLocked = false;  
         }  
+        
         async function copyResult() {  
             const resultText = document.getElementById('result').value;  
             if (!resultText) {  
@@ -98,7 +99,13 @@
             const align_col = document.getElementById('align_col').value;  
             const score_col = document.getElementById('score_col').value;  
 
-            if (!standard_col.trim()) {  
+            // 清理输入数据，移除可能存在的序号  
+            const cleanStandard = standard_col.split('\n')  
+                .map(line => line.replace(/^No\.\d+\s+/, '').trim())  
+                .filter(line => line)  
+                .join('\n');  
+
+            if (!cleanStandard.trim()) {  
                 alert('Please input standard list data');  
                 return;  
             }  
@@ -110,7 +117,7 @@
                         'Content-Type': 'application/json',  
                     },  
                     body: JSON.stringify({  
-                        standard_col: standard_col,  
+                        standard_col: cleanStandard, // 发送清理后的数据  
                         align_col: align_col,  
                         score_col: score_col  
                     })  
@@ -119,7 +126,7 @@
                 const data = await response.json();  
                 
                 if (data.success) {  
-                    // Update and lock standard column  
+                    // 更新并锁定标准列  
                     const standardTextarea = document.getElementById('standard_col');  
                     standardTextarea.value = data.numbered_standard.join('\n');  
                     standardTextarea.readOnly = true;  
