@@ -5,13 +5,95 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  
 </head>  
 <body>  
+    <div class="container">  
+        <h1>Score Alignment Tool</h1>  
+        
+        <div class="row">  
+            <div class="column">  
+                <h3>Standard List</h3>  
+                <textarea id="standard_col" placeholder="Paste standard list data..."></textarea>  
+                <div id="total_rows" class="info"></div>  
+                <button onclick="clearStandard()" class="clear-btn">Clear</button>  
+            </div>  
+            
+            <div class="column">  
+                <h3>Aligned Result</h3>  
+                <textarea id="result" readonly placeholder="Aligned scores will appear here..."></textarea>  
+                <button onclick="copyResult()" class="copy-btn" id="copyButton">Copy Result</button>  
+                <div id="copyMessage" class="copy-message"></div>  
+            </div>  
+        </div>  
+        <div class="row">  
+            <div class="column">  
+                <h3>Reference List</h3>  
+                <textarea id="align_col" placeholder="Paste reference list data..."></textarea>  
+                <button onclick="clearReference()" class="clear-btn">Clear</button>  
+            </div>  
+            
+            <div class="column">  
+                <h3>Score List</h3>  
+                <textarea id="score_col" placeholder="Paste score list data..."></textarea>  
+                <button onclick="clearScore()" class="clear-btn">Clear</button>  
+            </div>  
+        </div>  
+        <button onclick="processData()" class="process-btn">Process Data</button>  
+        <div id="not_found" class="warning"></div>  
+    </div>  
     <!-- [Previous HTML structure remains the same until the script tag] -->  
 
     <script>  
         let isStandardLocked = false;  
 
+        document.getElementById('standard_col').addEventListener('input', function() {  
+            if (!isStandardLocked) {  
+                const lines = this.value.trim().split('\n').filter(line => line.trim());  
+                document.getElementById('total_rows').textContent = `Total: ${lines.length} rows`;  
+            }  
+        });  
+        function clearStandard() {  
+            document.getElementById('standard_col').value = '';  
+            document.getElementById('standard_col').readOnly = false;  
+            document.getElementById('total_rows').textContent = '';  
+            isStandardLocked = false;  
+        }  
+        
+        async function copyResult() {  
+            const resultText = document.getElementById('result').value;  
+            if (!resultText) {  
+                showCopyMessage('No result to copy!', false);  
+                return;  
+            }  
         // [Previous event listeners and clear functions remain the same]  
 
+            try {  
+                await navigator.clipboard.writeText(resultText);  
+                showCopyMessage('Result copied! You can paste to grade sheet.', true);  
+            } catch (err) {  
+                showCopyMessage('Failed to copy result!', false);  
+            }  
+        }  
+        function showCopyMessage(message, success) {  
+            const messageDiv = document.getElementById('copyMessage');  
+            messageDiv.textContent = message;  
+            messageDiv.className = 'copy-message ' + (success ? 'success' : 'error');  
+            
+            // 自动消失  
+            setTimeout(() => {  
+                messageDiv.textContent = '';  
+                messageDiv.className = 'copy-message';  
+            }, 3000);  
+        }  
+        function clearReference() {  
+            document.getElementById('align_col').value = '';  
+        }  
+        function clearScore() {  
+            document.getElementById('score_col').value = '';  
+        }         
+
+
+
+
+        
         async function processData() {  
             const standard_col = document.getElementById('standard_col').value;  
             const align_col = document.getElementById('align_col').value;  
