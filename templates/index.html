@@ -39,7 +39,6 @@
         <button onclick="processData()" class="process-btn">Process Data</button>  
         <div id="not_found" class="warning"></div>  
     </div>  
-    <!-- [Previous HTML structure remains the same until the script tag] -->  
 
     <script>  
         let isStandardLocked = false;  
@@ -50,20 +49,20 @@
                 document.getElementById('total_rows').textContent = `Total: ${lines.length} rows`;  
             }  
         });  
+
         function clearStandard() {  
             document.getElementById('standard_col').value = '';  
             document.getElementById('standard_col').readOnly = false;  
             document.getElementById('total_rows').textContent = '';  
             isStandardLocked = false;  
         }  
-        
+
         async function copyResult() {  
             const resultText = document.getElementById('result').value;  
             if (!resultText) {  
                 showCopyMessage('No result to copy!', false);  
                 return;  
             }  
-        // [Previous event listeners and clear functions remain the same]  
 
             try {  
                 await navigator.clipboard.writeText(resultText);  
@@ -72,28 +71,26 @@
                 showCopyMessage('Failed to copy result!', false);  
             }  
         }  
+
         function showCopyMessage(message, success) {  
             const messageDiv = document.getElementById('copyMessage');  
             messageDiv.textContent = message;  
             messageDiv.className = 'copy-message ' + (success ? 'success' : 'error');  
             
-            // 自动消失  
             setTimeout(() => {  
                 messageDiv.textContent = '';  
                 messageDiv.className = 'copy-message';  
             }, 3000);  
         }  
+
         function clearReference() {  
             document.getElementById('align_col').value = '';  
         }  
+
         function clearScore() {  
             document.getElementById('score_col').value = '';  
-        }         
+        }  
 
-
-
-
-        
         async function processData() {  
             const standard_col = document.getElementById('standard_col').value;  
             const align_col = document.getElementById('align_col').value;  
@@ -132,20 +129,9 @@
                     standardTextarea.readOnly = true;  
                     isStandardLocked = true;  
 
-                    // Ensure result list matches standard list length  
-                    const standardList = data.numbered_standard;  
-                    let alignedResult = new Array(standardList.length).fill(''); // Initialize with empty strings  
-
-                    // Map scores to matching positions  
-                    data.result.forEach((score, index) => {  
-                        if (score !== null && score !== undefined) {  
-                            alignedResult[index] = score;  
-                        }  
-                    });  
-
-                    // Update result textarea  
-                    document.getElementById('result').value = alignedResult.join('\n');  
-                    document.getElementById('total_rows').textContent = `Total: ${standardList.length} rows`;  
+                    // Simply join the result array - it already contains empty strings for unmatched items  
+                    document.getElementById('result').value = data.result.join('\n');  
+                    document.getElementById('total_rows').textContent = `Total: ${data.numbered_standard.length} rows`;  
                     
                     if (data.not_found && data.not_found.length > 0) {  
                         document.getElementById('not_found').innerHTML =   
@@ -160,8 +146,6 @@
                 alert('Error occurred: ' + error);  
             }  
         }  
-
-        // [Copy and message functions remain the same]  
     </script>  
 </body>  
-</html>  
+</html>

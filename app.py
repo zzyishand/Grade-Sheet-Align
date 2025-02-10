@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, jsonify  
-import re
+import re  
+
 app = Flask(__name__)  
 
 @app.route('/')  
@@ -11,34 +12,37 @@ def align():
     try:  
         data = request.get_json()  
         
-        # 获取输入数据  
+        # Get input data  
         standard_col = data['standard_col']  
         align_col = data['align_col']  
         score_col = data['score_col']  
 
-        # 清理和分割数据  
+        # Clean and split data - remove empty lines more strictly  
         standard_lines = [line.strip() for line in standard_col.split('\n') if line.strip()]  
         align_lines = [line.strip() for line in align_col.split('\n') if line.strip()]  
         score_lines = [line.strip() for line in score_col.split('\n') if line.strip()]  
 
-        # 清除可能存在的序号  
+        # Remove possible numbering  
         standard_lines = [re.sub(r'^No\.\d+\s+', '', line) for line in standard_lines]  
         align_lines = [re.sub(r'^No\.\d+\s+', '', line) for line in align_lines]  
 
-        # 创建带序号的标准列表  
+        # Create numbered standard list  
         numbered_standard = [f"No.{i+1} {line}" for i, line in enumerate(standard_lines)]  
 
-        # 创建对齐映射  
+        # Create alignment mapping  
         align_map = dict(zip(align_lines, score_lines))  
 
-        # 根据标准列表重新排序分数  
-        result = []  
+        # Initialize result array with empty strings (not newlines)  
+        result = [''] * len(standard_lines)  
         not_found = []  
-        for std_line in standard_lines:  
+
+        # Fill in scores at matching positions  
+        for i, std_line in enumerate(standard_lines):  
             if std_line in align_map:  
-                result.append(align_map[std_line])  
+                result[i] = align_map[std_line]  
             else:  
                 not_found.append(std_line)  
+                # Keep as empty string, not newline  
 
         return jsonify({  
             'success': True,  
@@ -55,4 +59,4 @@ def align():
         })  
 
 if __name__ == '__main__':  
-    app.run(debug=True) 
+    app.run(debug=True)  
